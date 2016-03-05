@@ -69,11 +69,25 @@ end
 
 end
 
+=begin
   def self.find(num)
-    new_num=num -1
     products=self.product_array
-    return products[new_num]
+    num=num -1
+    return products[num]
   end
+=end
+
+
+  def self.find(id)
+    products=self.product_array
+    products.each do |product|
+      if product.id == id
+        return product
+      end
+    end
+  end
+
+
 
 
 
@@ -168,7 +182,6 @@ def self.where(brand)
 end
 
 
-
   def self.product_array
     product_array=[]
     datas=CSV.read(@@data_path)
@@ -178,6 +191,21 @@ end
     end
     return product_array
   end
+
+
+  def update(options={})
+      if options[:brand]
+        self.brand = options[:brand]
+        end
+      if options[:name]
+        self.name = options[:name]
+        end
+      if options[:price]
+        self.price = options[:price]
+      end
+      return self
+  end
+
 
 
 

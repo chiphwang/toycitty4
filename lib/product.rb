@@ -1,13 +1,14 @@
 require 'csv'
 require_relative 'udacidata'
 
+
 class Product < Udacidata
   attr_reader :id, :price, :brand, :name
+  attr_writer :price,:brand,:name
 
 
 
   def initialize(opts={})
-
     # Get last ID from the database if ID exists
     get_last_id
     # Set the ID if it was passed in, otherwise use last existing ID
@@ -21,10 +22,22 @@ class Product < Udacidata
   end
 
 
-  def id
-    @id
-  end
 
+  def update(options={})
+      brand=options[:brand]
+      name=options[:name]
+      price=options[:price]
+      if options[:brand]
+        self.brand = brand
+        end
+      if options[:name]
+        self.name = name
+        end
+      if options[:price]
+        self.price = price
+      end
+      return self
+  end
 
 
 
@@ -44,29 +57,3 @@ class Product < Udacidata
     end
 
 end
-
-=begin
-
-data_path=File.dirname(__FILE__) + "/../data/data1.csv"
-
-
-CSV.open(data_path, "wb") do |csv|
-  csv << ["id", "brand", "product", "price"]
-end
-
-product = Product.create(brand: "ColtToys", name: "Orchid Plant", price: 2.00)
-
-newtoy=Product.create(brand: "WalterToys", name: "Sticky Notes", price: 34.00)
-puts newtoy
-puts product
-puts Product.all
-products_array=[]
-products_array=Product.parse_file
-puts products_array
-
-products_array.each do |product|
-  puts product.class_check
-end
-
-
-=end
