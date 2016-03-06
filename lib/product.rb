@@ -23,24 +23,6 @@ class Product < Udacidata
 
 
 
-  def update(options={})
-      brand=options[:brand]
-      name=options[:name]
-      price=options[:price]
-      if options[:brand]
-        self.brand = brand
-        end
-      if options[:name]
-        self.name = name
-        end
-      if options[:price]
-        self.price = price
-      end
-      return self
-  end
-
-
-
   private
 
     # Reads the last line of the data file, and gets the id if one exists

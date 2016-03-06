@@ -9,7 +9,7 @@ require 'tempfile'
 class Udacidata
 
   @@data_path=File.dirname(__FILE__) + "/../data/data.csv"
-
+  @data_path1=File.dirname(__FILE__) + "/../data/data1.csv"
 
     def self.create(option={})
      brand=option[:brand]
@@ -20,9 +20,9 @@ class Udacidata
      new_product=Product.new({ brand: brand, name: name, price: price, id: id})
     else
       new_product=Product.new({ brand: brand, name: name, price: price})
-      id=new_product.id
+      new_id=new_product.id
      CSV.open(@@data_path, "ab") do |csv|
-       csv << ["#{id}","#{brand}", "#{name}","#{price}"]
+       csv << ["#{new_id}","#{brand}", "#{name}","#{price}"]
         end
       end
      return new_product
@@ -48,8 +48,8 @@ end
       counter=counter+1
     end
   return products
-end
   end
+end
 
 
 def self.last(num=1)
@@ -59,23 +59,16 @@ def self.last(num=1)
   products=self.product_array
   if num == 1
   return products.last
-else
+  else
    num.times do
   list_product << products[-counter]
   counter=counter+1
   end
   return list_product
-end
-
-end
-
-=begin
-  def self.find(num)
-    products=self.product_array
-    num=num -1
-    return products[num]
   end
-=end
+end
+
+
 
 
   def self.find(id)
@@ -91,17 +84,16 @@ end
 
 
 
-def self.destroy(id,option ={})
-destroyed=find_product_id(id)
-row=find_row(id)
-new_products = CSV.read('../data/data.csv', headers:true)
-new_products.delete(row)
-CSV.open('../data/data.csv', "wb") do |csv|
-csv << ["id", "brand", "product", "price"]
-end
-
-CSV.open('../data/data.csv', "ab") do |csv|
-  new_products.each do |product|
+  def self.destroy(id,option ={})
+    destroyed=find_product_id(id)
+    row=find_row(id)
+    new_products = CSV.read('../data/data.csv', headers:true)
+    new_products.delete(row)
+    CSV.open('../data/data.csv', "wb") do |csv|
+      csv << ["id", "brand", "product", "price"]
+    end
+    CSV.open('../data/data.csv', "ab") do |csv|
+      new_products.each do |product|
     csv << product
     end
   end
@@ -121,33 +113,31 @@ end
 
 
 def self.find_row(id)
-  products=self.product_array
-  counter = 0
+  counter=0
+  products=product_array
   products.each do |product|
     if product.id == id
-      print "row #{id} will be deleted"
       return counter
-    else
-      counter=counter+1
+    else counter=counter+1
     end
   end
 end
 
 =begin
-def self.find_row(num)
-  new_products = CSV.read('../data/data.csv', headers:true)
+def self.find_row(id)
   counter=0
-  new_products['id'].each do |id|
-    if id == num
-      puts "row #{id} is the row to be deleted"
-      return counter
-    else
-    counter=counter+1
+  datas=CSV.read('../data/data.csv' , headers:true)
+    datas.each do |data|
+      if data["id"]== id
+        puts "row #{id} will be deleted"
+        return counter
+      else
+        counter=counter+1
+      end
     end
   end
-end
-
 =end
+
 
   def self.find_by_brand(brand)
       products=self.product_array
@@ -170,7 +160,8 @@ end
 
 
 
-def self.where(brand)
+def self.where(options={})
+  brand=options[:brand]
   product_array=[]
   products=self.product_array
   products.each do |product|
@@ -193,18 +184,42 @@ end
   end
 
 
-  def update(options={})
+
+
+
+
+def update(options={})
+      new_products = CSV.read(@@data_path, headers:true)
+      row=Product.find_row(self.id)
       if options[:brand]
         self.brand = options[:brand]
+        new_products[row]["brand"]=options[:brand]
         end
       if options[:name]
         self.name = options[:name]
+        new_products[row]["name"]=[:name]
         end
-      if options[:price]
-        self.price = options[:price]
+        if options[:price]
+          self.price = options[:price]
+         new_products[row]["price"]=options[:price]
+        end
+        Product.write_data(new_products)
+        return self
       end
-      return self
+
+
+def self.write_data(new_products)
+    CSV.open('../data/data1.csv', "wb") do |csv|
+    csv << ["id", "brand", "product", "price"]
   end
+    CSV.open('../data/data1.csv', "ab") do |csv|
+    new_products.each do |product|
+      csv << product
+    end
+  end
+FileUtils.mv('../data/data1.csv', '../data/data.csv')
+end
+
 
 
 
