@@ -1,39 +1,34 @@
 module Analyzable
   # Your code goes here!
 
+
 def average_price(products)
     price_array=[]
-    products.each do |product|
-    price_array << product.price.to_f
-    end
+    price_array=products.map { |product| product.price.to_f }
     cost=price_array.inject(0){|sum,x| sum + x }
     num=price_array.length
     average = cost/num
     average = average.round(2)
     return average
-end
-
-def count_by_name(products)
-    names_array=[]
-    name_hash={}
-    names_array=generate_inventory(products)
-    names_array.each do |name|
-      num_products=inventory_count(products,name)
-      name_hash["#{name}"] = num_products
-    end
-    return name_hash
-end
-
-
-def count_by_brand(products)
-  brands_array=[]
-  brands_hash={}
-  brands_array=generate_brands(products)
-  brands_array.each do |brand|
-    num_products=product_count(products,brand)
-    brands_hash["#{brand}"] = num_products
   end
-return brands_hash
+
+
+
+
+def count_by_name products
+  names = Hash.new(0) # initializes an empty hash with default values of 0
+  products.each do |product|
+    names[product.name] += 1
+  end
+  names
+end
+
+def count_by_brand products
+  brands = Hash.new(0) # initializes an empty hash with default values of 0
+  products.each do |product|
+    brands[product.brand] += 1
+  end
+  brands
 end
 
 
@@ -42,20 +37,20 @@ end
 def print_report(products)
     report=[]
     price_average = average_price(products)
-    report << "The Average Price of all Products is #{price_average}"
-    report << "Inventory By Brand:"
+    report << "The Average Price of all Products is #{price_average}\n"
+    report << "Inventory By Brand:\n"
     brands_array=[]
     brands_array=generate_brands(products)
     brands_array.each do |brand|
     num_products=product_count(products,brand)
-      report << "-#{brand}: #{num_products}"
+      report << "-#{brand}: #{num_products}\n"
       end
-      report << "Inventory by name:"
+      report << "Inventory by name:\n"
       inventory_array=[]
       inventory_array=generate_inventory(products)
       inventory_array.each do |inventory|
       num_inventory=inventory_count(products,inventory)
-       report << "-#{inventory}: #{num_inventory}"
+       report << "-#{inventory}: #{num_inventory}\n"
       end
       report=report.map { |i| "'" + i.to_s + "'" }.join(" ")
       return report

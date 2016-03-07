@@ -12,30 +12,51 @@ class Udacidata
   @@data_path1=File.dirname(__FILE__) + "/../data/data1.csv"
 
 
-    def self.create(option={})
-     brand=option[:brand]
-     name=option[:name]
-     price=option[:price]
-     id = option[:id]
-     if  option[:id]
-     new_product=Product.new({ brand: brand, name: name, price: price, id: id})
-    else
-      new_product=Product.new({ brand: brand, name: name, price: price})
-      new_id=new_product.id
-     CSV.open(@@data_path, "ab") do |csv|
-       csv << ["#{new_id}","#{brand}", "#{name}","#{price}"]
+  def self.create(option={})
+      brand=option[:brand]
+      name=option[:name]
+      price=option[:price]
+      id=option[:id]
+      if option[:id]
+        check=check_if_id_exists?(option[:id])
+        if check == true
+            new_product=Product.new({ brand: brand, name: name, price: price, id: id})
+        else
+            new_product=Product.new({ brand: brand, name: name, price: price})
+            write_to_csv(id,brand,name,price)
+          end
+      else
+        new_product=Product.new({ brand: brand, name: name, price: price})
+        id=new_product.id
+        write_to_csv(id,brand,name,price)
+      end
+        return new_product
+      end
+
+
+      def self.write_to_csv(id,brand,name,price)
+        CSV.open(@@data_path, "ab") do |csv|
+        csv << ["#{id}","#{brand}", "#{name}","#{price}"]
         end
       end
-     return new_product
+
+
+  def self.check_if_id_exists?(test_id)
+    datas=CSV.read(@@data_path)
+    datas.shift
+    datas.each do |data|
+    if  data[0] == test_id
+      return true
+      end
+    end
+      return false
   end
-
-
 
 
   def self.all
       array_products=self.product_array
-    return array_products
-end
+      return array_products
+  end
 
 
   def self.first(num=1)
@@ -44,14 +65,14 @@ end
     counter=0
     firstproduct=self.product_array
     if num ==1
-    return firstproduct[0]
-  else
-    num.times do
-      products << firstproduct[counter]
-      counter=counter+1
+      return firstproduct[0]
+    else
+      num.times do
+        products << firstproduct[counter]
+        counter=counter+1
+      end
+      return products
     end
-  return products
-  end
 end
 
 
@@ -62,13 +83,13 @@ def self.last(num=1)
   products=self.product_array
   num_products=products.length
   if num == 1
-  return products.last
+    return products.last
   else
-  num.times do
-  list_product << products[counter]
-  counter = counter -1
+    num.times do
+      list_product << products[counter]
+      counter = counter -1
   end
-  return list_product
+    return list_product
   end
 end
 
@@ -84,7 +105,7 @@ end
   end
 
   def self.destroy(id,option ={})
-    destroyed=find_product_id(id)
+    destroyed=find(id)
     row=find_row(id)
     new_products = CSV.read(@@data_path, headers:true)
     new_products.delete(row)
@@ -92,37 +113,19 @@ end
       csv << ["id", "brand", "product", "price"]
     end
     CSV.open(@@data_path, "ab") do |csv|
-      new_products.each do |product|
-    csv << product
+        new_products.each do |product|
+        csv << product
     end
   end
   return destroyed
-end
-
-
-
-def self.find_product_id(id)
-  products=self.product_array
-  products.each do |product|
-    if product.id == id
-      return product
-    end
   end
-  raise ProductNotFoundError, "Product ID #{id} does not  exist."
-end
 
 
 def self.find_row(id)
-  counter=0
-  products=product_array
-  products.each do |product|
-    if product.id == id
-      return counter
-    else counter=counter+1
-    end
+    products=product_array
+    row=product_array.find_index { |product| product.id == id }
+    return row
   end
-end
-
 
 
 
@@ -130,25 +133,15 @@ def self.where(options={})
       brand=options[:brand]
       name=options[:name]
       product_array=[]
+      products=self.product_array
       if options[:brand]
-        products=self.product_array
-        products.each do |product|
-          if product.brand == brand
-            product_array << product
-          end
-        end
+        product_array=products.select { |product| product.brand == brand }
       end
       if options[:name]
-        products=self.product_array
-        products.each do |product|
-          if product.name == name
-            product_array << product
-          end
-        end
+        product_array= products.select { |product| product.name == name }
       end
-  return product_array
-end
-
+      return product_array
+    end
 
 
   def self.product_array
@@ -167,32 +160,31 @@ def update(options={})
       new_products = CSV.read(@@data_path, headers:true)
       row=Product.find_row(self.id)
       if options[:brand]
-        self.brand = options[:brand]
-        new_products[row]["brand"]=options[:brand]
-        end
+          self.brand = options[:brand]
+          new_products[row]["brand"]=options[:brand]
+      end
       if options[:name]
         self.name = options[:name]
         new_products[row]["name"]=[:name]
-        end
-        if options[:price]
+      end
+      if options[:price]
           self.price = options[:price]
-         new_products[row]["price"]=options[:price]
-        end
-        Product.write_data(new_products)
+          new_products[row]["price"]=options[:price]
+      end
+      Product.write_data(new_products)
         return self
       end
 
 
 def self.write_data(new_products)
-    CSV.open(@@data_path1, "wb") do |csv|
+    CSV.open(@@data_path, "wb") do |csv|
     csv << ["id", "brand", "product", "price"]
   end
-    CSV.open(@@data_path1, "ab") do |csv|
+    CSV.open(@@data_path, "ab") do |csv|
     new_products.each do |product|
       csv << product
     end
   end
-FileUtils.mv(@@data_path1, @@data_path)
 end
 
 
