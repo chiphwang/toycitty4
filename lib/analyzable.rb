@@ -13,6 +13,31 @@ def average_price(products)
     return average
 end
 
+def count_by_name(products)
+    names_array=[]
+    name_hash={}
+    names_array=generate_inventory(products)
+    names_array.each do |name|
+      num_products=inventory_count(products,name)
+      name_hash["#{name}"] = num_products
+    end
+    return name_hash
+end
+
+
+def count_by_brand(products)
+  brands_array=[]
+  brands_hash={}
+  brands_array=generate_brands(products)
+  brands_array.each do |brand|
+    num_products=product_count(products,brand)
+    brands_hash["#{brand}"] = num_products
+  end
+return brands_hash
+end
+
+
+
 
 def print_report(products)
     report=[]

@@ -29,6 +29,8 @@ class Udacidata
   end
 
 
+
+
   def self.all
       array_products=self.product_array
     return array_products
@@ -78,6 +80,7 @@ end
         return product
       end
     end
+    raise ProductNotFoundError, " Product ID #{id} does not  exist."
   end
 
 
@@ -109,6 +112,7 @@ def self.find_product_id(id)
       return product
     end
   end
+  ProductNotFoundError, "Product ID #{id} does not  exist."
 end
 
 
@@ -123,52 +127,28 @@ def self.find_row(id)
   end
 end
 
-=begin
-def self.find_row(id)
-  counter=0
-  datas=CSV.read('../data/data.csv' , headers:true)
-    datas.each do |data|
-      if data["id"]== id
-        puts "row #{id} will be deleted"
-        return counter
-      else
-        counter=counter+1
-      end
-    end
-  end
-=end
-
-
-  def self.find_by_brand(brand)
-      products=self.product_array
-      products.each do |product|
-        if product.brand == brand
-          return product
-        end
-      end
-    end
-
-
-    def self.find_by_name(name)
-      products=self.product_array
-      products.each do |product|
-        if product.name == name
-          return product
-        end
-      end
-    end
-
 
 
 def self.where(options={})
-  brand=options[:brand]
-  product_array=[]
-  products=self.product_array
-  products.each do |product|
-    if product.brand == brand
-      product_array << product
-    end
-  end
+      brand=options[:brand]
+      name=options[:name]
+      product_array=[]
+      if options[:brand]
+        products=self.product_array
+        products.each do |product|
+          if product.brand == brand
+            product_array << product
+          end
+        end
+      end
+      if options[:name]
+        products=self.product_array
+        products.each do |product|
+          if product.name == name
+            product_array << product
+          end
+        end
+      end
   return product_array
 end
 
@@ -182,9 +162,6 @@ end
     end
     return product_array
   end
-
-
-
 
 
 
