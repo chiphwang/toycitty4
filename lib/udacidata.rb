@@ -55,22 +55,21 @@ end
 
 
 def self.last(num=1)
-  counter=0
+  counter= -1
   list_product=[]
   products=[]
   products=self.product_array
+  num_products=products.length
   if num == 1
   return products.last
   else
-   num.times do
-  list_product << products[-counter]
-  counter=counter+1
+  num.times do
+  list_product << products[counter]
+  counter = counter -1
   end
   return list_product
   end
 end
-
-
 
 
   def self.find(id)
@@ -82,10 +81,6 @@ end
     end
     raise ProductNotFoundError, " Product ID #{id} does not  exist."
   end
-
-
-
-
 
   def self.destroy(id,option ={})
     destroyed=find_product_id(id)
@@ -112,7 +107,7 @@ def self.find_product_id(id)
       return product
     end
   end
-  ProductNotFoundError, "Product ID #{id} does not  exist."
+  raise ProductNotFoundError, "Product ID #{id} does not  exist."
 end
 
 
@@ -126,6 +121,7 @@ def self.find_row(id)
     end
   end
 end
+
 
 
 
@@ -151,6 +147,7 @@ def self.where(options={})
       end
   return product_array
 end
+
 
 
   def self.product_array
