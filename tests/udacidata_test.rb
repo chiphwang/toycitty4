@@ -162,10 +162,10 @@ class TestUdacidata < MiniTest::Test
    end
 
 
-=begin
+
   def teardown
     File.delete(@data_path)
   end
-=end
+
 
 end

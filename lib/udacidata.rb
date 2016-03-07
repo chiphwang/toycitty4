@@ -11,6 +11,7 @@ class Udacidata
   @@data_path=File.dirname(__FILE__) + "/../data/data.csv"
   @@data_path1=File.dirname(__FILE__) + "/../data/data1.csv"
 
+
     def self.create(option={})
      brand=option[:brand]
      name=option[:name]
