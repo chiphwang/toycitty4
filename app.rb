@@ -12,6 +12,9 @@ Module.create_finder_methods("brand","name")
 
  db_create
 
+ @@data_path=File.dirname(__FILE__) + "/./data/data.csv"
+ @@data_path1=File.dirname(__FILE__) + "/./data/data1.csv"
+
  puts "-------------------"
  puts "RETURN ALL PRODUCTS"
  puts "-------------------"
