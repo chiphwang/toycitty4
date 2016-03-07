@@ -9,7 +9,7 @@ require 'tempfile'
 class Udacidata
 
   @@data_path=File.dirname(__FILE__) + "/../data/data.csv"
-  @data_path1=File.dirname(__FILE__) + "/../data/data1.csv"
+  @@data_path1=File.dirname(__FILE__) + "/../data/data1.csv"
 
     def self.create(option={})
      brand=option[:brand]
@@ -85,12 +85,12 @@ end
   def self.destroy(id,option ={})
     destroyed=find_product_id(id)
     row=find_row(id)
-    new_products = CSV.read('../data/data.csv', headers:true)
+    new_products = CSV.read(@@data_path, headers:true)
     new_products.delete(row)
-    CSV.open('../data/data.csv', "wb") do |csv|
+    CSV.open(@@data_path, "wb") do |csv|
       csv << ["id", "brand", "product", "price"]
     end
-    CSV.open('../data/data.csv', "ab") do |csv|
+    CSV.open(@@data_path, "ab") do |csv|
       new_products.each do |product|
     csv << product
     end
@@ -183,15 +183,15 @@ def update(options={})
 
 
 def self.write_data(new_products)
-    CSV.open('../data/data1.csv', "wb") do |csv|
+    CSV.open(@@data_path1, "wb") do |csv|
     csv << ["id", "brand", "product", "price"]
   end
-    CSV.open('../data/data1.csv', "ab") do |csv|
+    CSV.open(@@data_path1, "ab") do |csv|
     new_products.each do |product|
       csv << product
     end
   end
-FileUtils.mv('../data/data1.csv', '../data/data.csv')
+FileUtils.mv(@@data_path1, @@data_path)
 end
 
 
